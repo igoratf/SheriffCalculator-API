@@ -3,6 +3,18 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const knex = require('knex');
 
+const player = require('./controllers/player');
+
+const db = knex({
+   client: 'pg',
+   connection: {
+      host: '127.0.0.1',
+      user: 'igor',
+      password: 'dbpassword',
+      database: 'sheriffcalculator'
+   }
+});
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -10,7 +22,10 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
    return res.send('Working just fine');
-})
+});
+
+
+app.post('/player', player.addPlayer(db));
 
 
 
