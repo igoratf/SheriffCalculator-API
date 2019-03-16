@@ -63,10 +63,10 @@ const addPlayer = (db) => (req, res) => {
                })
          })
          .then(playerId => {
-            let rows = Object.entries(contrabands).map((contraband) => {
+            let rows = Object.values(contrabands).map((contraband) => {
                return {
-                  name: contraband[0],
-                  quantity: contraband[1],
+                  name: contraband.name,
+                  quantity: contraband.quantity,
                   player_id: playerId[0]
                }
             })
