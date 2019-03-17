@@ -16,57 +16,38 @@ const addPlayer = (db) => (req, res) => {
             .then(playerId => {
                return trx('resource')
                   .returning('player_id')
-                  .insert({
+                  .insert([{
                      name: "apple",
                      quantity: apple,
                      player_id: playerId[0]
-                  })
-            })
-            .then(playerId => {
-               return trx('resource')
-                  .returning('player_id')
-                  .insert({
-                     name: "bread",
-                     quantity: bread,
-                     player_id: playerId[0]
-                  })
-            })
-            .then(playerId => {
-               return trx('resource')
-                  .returning('player_id')
-                  .insert({
-                     name: "cheese",
-                     quantity: cheese,
-                     player_id: playerId[0]
-                  })
-            })
-            .then(playerId => {
-               return trx('resource')
-                  .returning('player_id')
-                  .insert({
-                     name: "chicken",
-                     quantity: chicken,
-                     player_id: playerId[0]
-                  })
-            })
-            .then(playerId => {
-               return trx('resource')
-                  .returning('player_id')
-                  .insert({
-                     name: "coin",
-                     quantity: coin,
-                     player_id: playerId[0]
-                  })
-            })
-            // Posteriormente adicionar score ao próprio contrabando a partir de ENUM
-            .then(playerId => {
-               return trx('resource')
-                  .returning('player_id')
-                  .insert({
-                     name: "contrabandScore",
-                     quantity: contrabandScore,
-                     player_id: playerId[0]
-                  })
+                     },
+                     {
+                        name: "bread",
+                        quantity: bread,
+                        player_id: playerId[0]
+                     },
+                     {
+                        name: "cheese",
+                        quantity: cheese,
+                        player_id: playerId[0]
+                     },
+                     {
+                        name: "chicken",
+                        quantity: chicken,
+                        player_id: playerId[0]
+                     },
+                     {
+                        name: "coin",
+                        quantity: coin,
+                        player_id: playerId[0]
+                     },
+                     {
+                        // Adicionar score ao contrabando e remover esta coluna
+                        name: "contrabandScore",
+                        quantity: contrabandScore,
+                        player_id: playerId[0]
+                     }
+                     ])
             })
             .then(playerId => {
                let rows = Object.values(contrabands).map((contraband) => {
