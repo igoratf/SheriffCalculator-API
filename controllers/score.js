@@ -5,8 +5,13 @@ const calculateScore = (db) => (req, res) => {
 
    const { players_id } = req.body;
 
-   console.log(req.body);
-   console.log(players_id);
+   var kingsAndQueens = {
+   }
+
+   var score = {};
+
+   // console.log(req.body);
+   // console.log(players_id);
 
    db.select('quantity', 'value', 'name', 'player_id')
       .from('resource')
@@ -21,31 +26,57 @@ const calculateScore = (db) => (req, res) => {
             })
       })
       .then((res) => {
-         console.log(res);
+         // console.log(res);
          let response = res;
-         let score = {};
-         let copy = response.map(resource => {
+         return response.map(resource => {
             if (score[resource.player_id]) {
                score[resource.player_id] += resource.quantity * resource.value;
             } else {
                score[resource.player_id] = resource.quantity * resource.value;
             }
          })
-
-         console.log(score);
-         // console.log(res.reduce((score, resource) => {
-         //    return score + (resource.quantity * resource.value);
-         // }, 0));
-         
-         let bonusScore = {'kings': [], 'queens': []}
-
-         calculateKingAndQueen(db, players_id, ['apple', 'bread', 'cheese', 'chicken'])
-         .then(res => console.log('aqui é o final', res));
-
-         // console.log(kingsAndQueens);
-
-
       })
+      .then(() => calculateKingAndQueen(db, players_id, ['apple', 'bread', 'cheese', 'chicken']))
+         .then(res => {
+            let kings = res.kings;
+            let queens = res.queens;
+
+            console.log('kings', kings);
+            console.log('queens', queens);
+
+            console.log('before iterating', score);
+            kings.map(king => {
+               let id = king.player_id
+               score[id] += king.extraScore;
+               if (kingsAndQueens[id]) {
+                  kingsAndQueens[id].kings.push(king.resource);
+               } else {
+                  kingsAndQueens[id] = {
+                     kings: [king.resource],
+                     queens: []
+                  }
+               }
+            })
+
+            queens.map(queen => {
+               let id = queen.player_id;
+               score[id] += queen.extraScore;
+               if (kingsAndQueens[id]) {
+                  kingsAndQueens[id].queens.push(queen.resource);
+               } else {
+                  kingsAndQueens[id] = {
+                     kings: [],
+                     queens: [queen.resource]
+                  }
+               }
+            })
+
+            console.log(score);
+
+         })
+      
+      .then(() => res.status(200).json(kingsAndQueens))
+      .catch(err => console.log(err));
 }
 const calculateKingAndQueen = async (db, players_id, resources) => {
    
@@ -85,7 +116,6 @@ const calculateKingAndQueen = async (db, players_id, resources) => {
       })
       
       return Promise.all(requests).then(() => extraScore);
-   // } 
 
 }
 
