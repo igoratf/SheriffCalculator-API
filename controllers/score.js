@@ -39,26 +39,29 @@ const calculateScore = (db) => (req, res) => {
          
          let bonusScore = {'kings': [], 'queens': []}
 
-         let kingsAndQueens = calculateKingAndQueen(db, players_id, ['apple', 'bread', 'cheese', 'chicken']);
+         calculateKingAndQueen(db, players_id, ['apple', 'bread', 'cheese', 'chicken'])
+         .then(res => console.log('aqui é o final', res));
+
+         // console.log(kingsAndQueens);
 
 
       })
 }
-
-const calculateKingAndQueen = (db, players_id, resources) => {
+const calculateKingAndQueen = async (db, players_id, resources) => {
    
 
    let extraScore = {'kings': [], 'queens': []}
 
    let result = [];
-   if (players_id.length && resources.length) {
+   // if (players_id.length && resources.length) {
 
-      resources.map(resource => {
+      const requests = resources.map(async resource => {
          let kings = [];
          let queens = [];
 
-         db.select('name', 'player_id', 'quantity')
+         await db.select('name', 'player_id', 'quantity')
          .from('resource')
+         .whereIn('player_id', players_id)
          .where('name', resource)
          .orderBy('quantity', 'desc')
          .then(res => {
@@ -75,22 +78,14 @@ const calculateKingAndQueen = (db, players_id, resources) => {
                   queens.push({ resource: res.name, quantity: res.quantity, player_id: res.player_id, extraScore: resourceQueenEnum[resource]})
                }
             })
-
-            console.log('kings', kings);
-            console.log('queens', queens);
             
             extraScore['kings'] = extraScore['kings'].concat(kings);
             extraScore['queens'] = extraScore['queens'].concat(queens);
-
-            console.log('extra', extraScore);
-
-            return extraScore;
-            
          })
       })
-     
-
-   }
+      
+      return Promise.all(requests).then(() => extraScore);
+   // } 
 
 }
 
