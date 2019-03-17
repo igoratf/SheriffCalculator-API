@@ -74,6 +74,18 @@ const calculateScore = (db) => (req, res) => {
             console.log(score);
 
          })
+         .then(() => {
+            let scoreMap = [];
+            Object.entries(score).map(score => {
+               scoreMap.push({
+                  player_id: score[0],
+                  score: score[1]
+               })
+            })
+            db('score')
+            .insert(scoreMap)
+            .then((inserts) => console.log(inserts));
+         })
       
       .then(() => res.status(200).json(kingsAndQueens))
       .catch(err => console.log(err));
