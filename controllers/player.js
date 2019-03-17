@@ -98,6 +98,18 @@ const addPlayer = (db) => (req, res) => {
 
 };
 
+const deletePlayer = (db) => (req, res) => {
+   const { id } = req.body;
+
+   db('player')
+   .where('id', id)
+   .del()
+   .then(() => res.status(200).json('player deleted'))
+   .catch(err => res.status(400).json('unable to delete player'))
+
+}
+
 module.exports = {
-   addPlayer: addPlayer
+   addPlayer: addPlayer,
+   deletePlayer: deletePlayer
 }

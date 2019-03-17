@@ -26,6 +26,7 @@ app.get('/', (req, res) => {
 
 
 app.post('/player', player.addPlayer(db));
+app.delete('/player', player.deletePlayer(db));
 
 
 
