@@ -5,19 +5,20 @@ const calculateScore = (db) => (req, res) => {
    console.log(req.body);
    console.log(players_id);
 
-   db.select('quantity', 'value', 'name')
+   db.select('quantity', 'value', 'name', 'player_id')
    .from('resource')
    .whereIn('player_id', players_id)
    .union(function() {
-      this.select('quantity', 'value', 'name')
+      this.select('quantity', 'value', 'name', 'player_id')
       .from('contraband')
       .whereIn('player_id', players_id)
       .then((res) => {
-         console.log('teste', res);
+         // console.log('teste', res);
       })
    })
    .then((res) => {
-      console.log(res);
+      let test = res.sort((a,b) => a.player_id > b.player_id ? 1 : -1)
+      console.log(test)
       let resources = res;
       console.log(resources.reduce((score, resource) => {
          return score + (resource.quantity * resource.value);
