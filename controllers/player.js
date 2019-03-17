@@ -19,35 +19,40 @@ const addPlayer = (db) => (req, res) => {
                   .insert([{
                      name: "apple",
                      quantity: apple,
+                     player_id: playerId[0],
+                     value: 2
+                  },
+                  {
+                     name: "bread",
+                     quantity: bread,
+                     player_id: playerId[0],
+                     value: 3
+                  },
+                  {
+                     name: "cheese",
+                     quantity: cheese,
+                     player_id: playerId[0],
+                     value: 3
+                  },
+                  {
+                     name: "chicken",
+                     quantity: chicken,
+                     player_id: playerId[0],
+                     value: 4
+                  },
+                  {
+                     name: "coin",
+                     quantity: coin,
+                     player_id: playerId[0],
+                     value: 1
+                  },
+                  {
+                     // Adicionar score ao contrabando e remover esta coluna
+                     name: "contrabandScore",
+                     quantity: contrabandScore,
                      player_id: playerId[0]
-                     },
-                     {
-                        name: "bread",
-                        quantity: bread,
-                        player_id: playerId[0]
-                     },
-                     {
-                        name: "cheese",
-                        quantity: cheese,
-                        player_id: playerId[0]
-                     },
-                     {
-                        name: "chicken",
-                        quantity: chicken,
-                        player_id: playerId[0]
-                     },
-                     {
-                        name: "coin",
-                        quantity: coin,
-                        player_id: playerId[0]
-                     },
-                     {
-                        // Adicionar score ao contrabando e remover esta coluna
-                        name: "contrabandScore",
-                        quantity: contrabandScore,
-                        player_id: playerId[0]
-                     }
-                     ])
+                  }
+                  ])
             })
             .then(playerId => {
                let rows = Object.values(contrabands).map((contraband) => {
@@ -83,10 +88,10 @@ const deletePlayer = (db) => (req, res) => {
    const { id } = req.body;
 
    db('player')
-   .where('id', id)
-   .del()
-   .then(() => res.status(200).json('player deleted'))
-   .catch(err => res.status(400).json('unable to delete player'))
+      .where('id', id)
+      .del()
+      .then(() => res.status(200).json('player deleted'))
+      .catch(err => res.status(400).json('unable to delete player'))
 
 }
 
