@@ -91,7 +91,7 @@ const deletePlayer = (db) => (req, res) => {
       .where('id', id)
       .del()
       .then(() => res.status(200).json('player deleted'))
-      .catch(err => res.status(400).json('unable to delete player'))
+      .catch(err => res.status(400).json('unable to delete player'));
 
 }
 
