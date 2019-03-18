@@ -78,6 +78,8 @@ const calculateScore = (db) => async (req, res) => {
          })
          db('score')
             .insert(scoreMap)
+            // Só executa o insert se houver o then
+            .then((inserts) => console.log(inserts));
 
       })
 
