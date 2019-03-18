@@ -30,7 +30,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/ranking', ranking.getPlayerRanking(db));
-app.get('/contraband', contraband.getContrabands());
+app.get('/contraband', contraband.getContrabands(db));
 
 app.post('/score', score.calculateScore(db));
 

@@ -1,7 +1,9 @@
-const contrabandlist = require('../objects/contrabandList');
 
-const getContrabands = () => (req, res) => {
-   return res.status(200).json(contrabandlist);
+const getContrabands = (db) => (req, res) => {
+   return db('contraband')
+   .select('name', 'value', 'quantity')
+   .then((data) => res.status(200).json(data))
+   .catch(err => console.log(err));
 }
 
 
