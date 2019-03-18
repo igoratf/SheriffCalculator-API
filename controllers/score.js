@@ -16,12 +16,6 @@ const calculateScore = (db) => async (req, res) => {
   await db.select('quantity', 'value', 'name', 'player_id')
       .from('resource')
       .whereIn('player_id', players_id)
-      .union(function () {
-         this.select('quantity', 'value', 'name', 'player_id')
-            .from('contraband')
-            .whereIn('player_id', players_id)
-            .orderBy('player_id')
-      })
       .then((res) => {
          // console.log(res);
          let response = res;
@@ -84,7 +78,7 @@ const calculateScore = (db) => async (req, res) => {
       })
 
       .then(() => res.status(200).json(gameScore))
-      .catch(err => res.status(400).json('unable to retrieve score'));
+      .catch(err => console.log(err));
 }
 const calculateKingAndQueen = async (db, players_id, resources) => {
 
