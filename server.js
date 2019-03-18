@@ -10,10 +10,8 @@ const ranking = require('./controllers/ranking');
 const db = knex({
    client: 'pg',
    connection: {
-      host: '127.0.0.1',
-      user: 'igor',
-      password: 'dbpassword',
-      database: 'sheriffcalculator'
+      connectionString: process.env.DATABASE_URL,
+      ssl: true
    }
 });
 
