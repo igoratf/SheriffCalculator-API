@@ -1,7 +1,7 @@
 const { resourceKingEnum, resourceQueenEnum } = require('../enum/resource_enum');
 
 
-const calculateScore = (db) => (req, res) => {
+const calculateScore = (db) => async (req, res) => {
 
    const { players_id } = req.body;
 
@@ -13,7 +13,7 @@ const calculateScore = (db) => (req, res) => {
    var gameScore = {};
    var scoreMap = [];
 
-   db.select('quantity', 'value', 'name', 'player_id')
+  await db.select('quantity', 'value', 'name', 'player_id')
       .from('resource')
       .whereIn('player_id', players_id)
       .union(function () {
@@ -41,10 +41,10 @@ const calculateScore = (db) => (req, res) => {
          let kings = res.kings;
          let queens = res.queens;
 
-         console.log('kings', kings);
-         console.log('queens', queens);
+         console.log('kings after response', kings);
+         console.log('queens after response', queens);
 
-         console.log('before iterating', gameScore);
+         // console.log('before iterating', gameScore);
          kings.map(king => {
             let id = king.player_id
             gameScore[id] += king.extraScore;
@@ -71,8 +71,6 @@ const calculateScore = (db) => (req, res) => {
             }
          })
 
-         console.log(gameScore);
-
       })
       .then(() => {
          
@@ -88,7 +86,7 @@ const calculateScore = (db) => (req, res) => {
          console.log(gameScore);
          db('score')
             .insert(scoreMap)
-            .then((inserts) => console.log(inserts));
+
       })
 
       .then(() => res.status(200).json(gameScore))
@@ -96,32 +94,34 @@ const calculateScore = (db) => (req, res) => {
 }
 const calculateKingAndQueen = async (db, players_id, resources) => {
 
+   console.log('resources', resources)
+
 
    let extraScore = { 'kings': [], 'queens': [] }
 
-   let result = [];
 
-   const requests = resources.map(async resource => {
+   const requests = await resources.map(async resource => {
       let kings = [];
       let queens = [];
+      console.log('aqui é a porra do recurso', resource);
 
-      await db.select('name', 'player_id', 'quantity')
+         await db.select('name', 'player_id', 'quantity')
          .from('resource')
          .whereIn('player_id', players_id)
          .where('name', resource)
          .orderBy('quantity', 'desc')
          .then(res => {
             result = res;
-            // console.log(res);
+            console.log('resposta', result);
+            return result;
          })
-         .catch(err => console.log(err))
-         .then(() => {
-            // console.log('result', result);
-            result.map(res => {
+         .then((result) => {
+            console.log('result', result);
+            result.map(current => {
                if (!kings.length || (kings.length && res.quantity == kings[0].quantity)) {
-                  kings.push({ resource: res.name, quantity: res.quantity, player_id: res.player_id, extraScore: resourceKingEnum[resource] })
-               } else if (!queens.length || (queens.length && res.quantity == queens[0].quantity)) {
-                  queens.push({ resource: res.name, quantity: res.quantity, player_id: res.player_id, extraScore: resourceQueenEnum[resource] })
+                  kings.push({ resource: current.name, quantity: current.quantity, player_id: current.player_id, extraScore: resourceKingEnum[resource] })
+               } else if (!queens.length || (queens.length && current.quantity == queens[0].quantity)) {
+                  queens.push({ resource: current.name, quantity: current.quantity, player_id: current.player_id, extraScore: resourceQueenEnum[resource] })
                }
             })
 
@@ -130,7 +130,10 @@ const calculateKingAndQueen = async (db, players_id, resources) => {
          })
    })
 
-   return Promise.all(requests).then(() => extraScore);
+   const mapping = await Promise.all(requests).then(() => extraScore);
+   
+   console.log('mapping', mapping);
+   return mapping;
 
 }
 
