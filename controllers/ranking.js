@@ -3,6 +3,7 @@ const getPlayerRanking = (db) => (req, res) => {
    .join('player', 'score.player_id', '=', 'player.id')
    .select('player.name', 'score.score')
    .orderBy('score.score', 'desc')
+   .limit(100)
    .then((data) => res.status(200).json(data))
    .catch(err => console.log(err));
 }
