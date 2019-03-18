@@ -5,7 +5,10 @@ const addPlayer = (db) => (req, res) => {
       return res.json(400).json('invalid player');
    }
 
+   
+
    else {
+      console.log('user', req.body);
 
       db.transaction(trx => {
          trx.insert({

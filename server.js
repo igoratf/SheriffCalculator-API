@@ -31,6 +31,6 @@ app.post('/player', player.addPlayer(db));
 app.delete('/player', player.deletePlayer(db));
 
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 3001, () => {
    console.log(`I can hear you at port ${process.env.PORT}`);
 });

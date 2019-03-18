@@ -5,10 +5,13 @@ const calculateScore = (db) => (req, res) => {
 
    const { players_id } = req.body;
 
+   console.log('received', players_id);
+
    var kingsAndQueens = {
    }
 
-   var score = {};
+   var gameScore = {};
+   var scoreMap = [];
 
    db.select('quantity', 'value', 'name', 'player_id')
       .from('resource')
@@ -26,10 +29,10 @@ const calculateScore = (db) => (req, res) => {
          // console.log(res);
          let response = res;
          return response.map(resource => {
-            if (score[resource.player_id]) {
-               score[resource.player_id] += resource.quantity * resource.value;
+            if (gameScore[resource.player_id]) {
+               gameScore[resource.player_id] += resource.quantity * resource.value;
             } else {
-               score[resource.player_id] = resource.quantity * resource.value;
+               gameScore[resource.player_id] = resource.quantity * resource.value;
             }
          })
       })
@@ -41,10 +44,10 @@ const calculateScore = (db) => (req, res) => {
          console.log('kings', kings);
          console.log('queens', queens);
 
-         console.log('before iterating', score);
+         console.log('before iterating', gameScore);
          kings.map(king => {
             let id = king.player_id
-            score[id] += king.extraScore;
+            gameScore[id] += king.extraScore;
             if (kingsAndQueens[id]) {
                kingsAndQueens[id].kings.push(king.resource);
             } else {
@@ -57,7 +60,7 @@ const calculateScore = (db) => (req, res) => {
 
          queens.map(queen => {
             let id = queen.player_id;
-            score[id] += queen.extraScore;
+            gameScore[id] += queen.extraScore;
             if (kingsAndQueens[id]) {
                kingsAndQueens[id].queens.push(queen.resource);
             } else {
@@ -68,23 +71,27 @@ const calculateScore = (db) => (req, res) => {
             }
          })
 
-         console.log(score);
+         console.log(gameScore);
 
       })
       .then(() => {
-         let scoreMap = [];
-         Object.entries(score).map(score => {
+         
+         Object.entries(gameScore).map(score => {
+            let id = score[0];
+            let playerScore = score[1];
             scoreMap.push({
-               player_id: score[0],
-               score: score[1]
+               player_id: id,
+               score: playerScore,
             })
+            gameScore[id] = { score: playerScore, kingOrQueen: kingsAndQueens[id]};
          })
+         console.log(gameScore);
          db('score')
             .insert(scoreMap)
             .then((inserts) => console.log(inserts));
       })
 
-      .then(() => res.status(200).json(kingsAndQueens))
+      .then(() => res.status(200).json(gameScore))
       .catch(err => console.log(err));
 }
 const calculateKingAndQueen = async (db, players_id, resources) => {
