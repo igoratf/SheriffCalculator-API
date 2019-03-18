@@ -21,9 +21,6 @@ const calculateScore = (db) => async (req, res) => {
             .from('contraband')
             .whereIn('player_id', players_id)
             .orderBy('player_id')
-            .then((res) => {
-               // console.log('teste', res);
-            })
       })
       .then((res) => {
          // console.log(res);
@@ -36,7 +33,7 @@ const calculateScore = (db) => async (req, res) => {
             }
          })
       })
-      .then(() => calculateKingAndQueen(db, players_id, ['apple', 'bread', 'cheese', 'chicken']))
+      .then(async () => await calculateKingAndQueen(db, players_id, ['apple', 'bread', 'cheese', 'chicken']))
       .then(res => {
          let kings = res.kings;
          let queens = res.queens;
@@ -100,25 +97,19 @@ const calculateKingAndQueen = async (db, players_id, resources) => {
    let extraScore = { 'kings': [], 'queens': [] }
 
 
-   const requests = await resources.map(async resource => {
+   const requests = resources.map(async resource => {
       let kings = [];
       let queens = [];
-      console.log('aqui é a porra do recurso', resource);
 
-         await db.select('name', 'player_id', 'quantity')
+         return db.select('name', 'player_id', 'quantity')
          .from('resource')
          .whereIn('player_id', players_id)
          .where('name', resource)
          .orderBy('quantity', 'desc')
-         .then(res => {
-            result = res;
-            console.log('resposta', result);
-            return result;
-         })
          .then((result) => {
             console.log('result', result);
             result.map(current => {
-               if (!kings.length || (kings.length && res.quantity == kings[0].quantity)) {
+               if (!kings.length || (kings.length && current.quantity == kings[0].quantity)) {
                   kings.push({ resource: current.name, quantity: current.quantity, player_id: current.player_id, extraScore: resourceKingEnum[resource] })
                } else if (!queens.length || (queens.length && current.quantity == queens[0].quantity)) {
                   queens.push({ resource: current.name, quantity: current.quantity, player_id: current.player_id, extraScore: resourceQueenEnum[resource] })
@@ -132,7 +123,6 @@ const calculateKingAndQueen = async (db, players_id, resources) => {
 
    const mapping = await Promise.all(requests).then(() => extraScore);
    
-   console.log('mapping', mapping);
    return mapping;
 
 }
