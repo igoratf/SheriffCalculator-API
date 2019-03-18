@@ -62,12 +62,13 @@ const addPlayer = (db) => (req, res) => {
                   return {
                      name: contraband.name,
                      quantity: contraband.quantity,
-                     player_id: playerId[0]
+                     player_id: playerId[0],
+                     value: contraband.value
                   }
                })
 
                if (rows.length) {
-                  return trx.batchInsert('contraband', rows)
+                  return trx.batchInsert('resource', rows)
                      .returning('player_id')
                }
 
