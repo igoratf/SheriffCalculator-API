@@ -78,7 +78,7 @@ const calculateScore = (db) => async (req, res) => {
       })
 
       .then(() => res.status(200).json(gameScore))
-      .catch(err => console.log(err));
+      .catch(err => res.status(400).json('unable to calculate score'));
 }
 const calculateKingAndQueen = async (db, players_id, resources) => {
 
