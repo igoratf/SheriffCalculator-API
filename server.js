@@ -5,6 +5,7 @@ const knex = require('knex');
 
 const player = require('./controllers/player');
 const score = require('./controllers/score');
+const ranking = require('./controllers/ranking');
 
 const db = knex({
    client: 'pg',
@@ -24,6 +25,8 @@ app.use(cors());
 app.get('/', (req, res) => {
    return res.send('Working just fine');
 });
+
+app.get('/ranking', ranking.getPlayerRanking(db));
 
 app.post('/score', score.calculateScore(db));
 
